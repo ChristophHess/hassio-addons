@@ -1,0 +1,104 @@
+#!/bin/bash
+
+DESC="OctoPrint description"
+NAME="OctoPrint"
+PIDFILE="/var/run/octoprint.pid"
+COMMAND="/data/OctoPrint/venv/bin/octoprint"
+SCRIPT_USER="octoprint"
+
+#
+# Function to verify if a pid is alive
+#
+is_alive()
+{
+   pid=`cat $1` > /dev/null 2>&1
+   kill -0 $pid > /dev/null 2>&1
+   return $?
+}
+
+#
+# Function that starts the daemon/service
+#
+do_start()
+{
+   # Return
+   #   0 if daemon has been started
+   #   1 if daemon was already running
+   #   2 if daemon could not be started
+
+   is_alive $PIDFILE
+   RETVAL="$?"
+
+   if [ $RETVAL != 0 ]; then
+       start-stop-daemon --start --background --quiet --make-pidfile --pidfile $PIDFILE --exec $COMMAND --user $SCRIPT_USER
+       RETVAL="$?"
+   fi
+}
+
+#
+# Function that stops the daemon/service
+#
+do_stop()
+{
+   # Return
+   #   0 if daemon has been stopped
+   #   1 if daemon was already stopped
+   #   2 if daemon could not be stopped
+   #   other if a failure occurred
+
+   start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --user $SCRIPT_USER --pidfile $PIDFILE
+   RETVAL="$?"
+   [ "$RETVAL" = "2" ] && return 2
+
+   rm -f $PIDFILE
+
+   [ "$RETVAL" = "0"  ] && return 0 || return 1
+}
+
+case "$1" in
+  start)
+   echo "Starting $DESC" "$NAME"
+   do_start
+   case "$?" in
+      0|1) echo 0 ;;
+      2) echo 1 ;;
+   esac
+   ;;
+  stop)
+   echo "Stopping $DESC" "$NAME"
+   do_stop
+   case "$?" in
+      0|1) echo 0 ;;
+      2) echo 1 ;;
+   esac
+   ;;
+  status)
+   if [ ! -f $PIDFILE ]; then
+    echo 1
+   else
+    echo 0
+   fi
+   ;;
+  restart)
+   echo "Restarting $DESC" "$NAME"
+   do_stop
+   case "$?" in
+     0|1)
+      do_start
+      case "$?" in
+         0) echo 0 ;;
+         1) echo 1 ;; # Old process is still running
+         *) echo 1 ;; # Failed to start
+      esac
+      ;;
+     *)
+        # Failed to stop
+      echo 1
+      ;;
+   esac
+   ;;
+  *)
+   echo "Usage: $SCRIPTNAME {start|stop|status|restart}" >&2
+   exit 3
+   ;;
+esac
