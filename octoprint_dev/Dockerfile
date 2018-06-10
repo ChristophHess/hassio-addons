@@ -1,41 +1,52 @@
 ARG BUILD_FROM
 FROM $BUILD_FROM
-
+# as builder
 ENV LANG C.UTF-8
+COPY tmp/ /home/octoprint/
 
-# Install requirements
-RUN apk add --update --no-cache sudo python openrc \
-    && \
-    addgroup -S octoprint && \
-    adduser -G octoprint -g "octoprint user" -s /bin/sh -D octoprint && \
-    echo "octoprint ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
-    && \
-    mkdir -p /data && chown -R octoprint:octoprint /data
-USER octoprint
-
-# Setup and install OctoPrint
-WORKDIR /data
-RUN sudo apk add --update --no-cache --virtual build-dependencies \
-    git \
+RUN apk add --update --no-cache \
+    python \
     python-dev \
     build-base \
     linux-headers \
+    avahi-compat-libdns_sd \
+    avahi \
     && \
-    sudo -H python -m ensurepip --default-pip \
+    sed -i 's/#enable-dbus=yes/enable-dbus=no/g' /etc/avahi/avahi-daemon.conf \
     && \
-    sudo -H pip install virtualenv \
+    python -m ensurepip --default-pip \
     && \
-    # Install
-    git clone https://github.com/foosel/OctoPrint.git /data/OctoPrint && \
-    cd /data/OctoPrint && \
-    virtualenv venv && \
-    ./venv/bin/pip install .
+    pip install virtualenv
+RUN addgroup -S octoprint && \
+    adduser -G octoprint -g "octoprint user" -s /bin/sh -D octoprint
+# Compile OctoPrint
+# RUN cd /home/octoprint/OctoPrint && \
+#     virtualenv venv && \
+#     ./venv/bin/pip install https://goo.gl/SxQZ06 && \
+#     ./venv/bin/pip install . --quiet
+# Compile Cura
+# FROM $BUILD_FROM as builder_cura
+# ENV LANG C.UTF-8
+# RUN mkdir -p /data/Cura
 
-# Copy data for add-on
-COPY octoprint /etc/init.d/octoprint
-RUN sudo chmod +x /etc/init.d/octoprint
+# # Setup final stage for running.
+# FROM $BUILD_FROM
+# ENV LANG C.UTF-8
+# RUN apk add --update --no-cache python \
+#     && \
+#     addgroup -S octoprint && \
+#     adduser -G octoprint -g "octoprint user" -s /bin/sh -D octoprint
+#     # && \
+#     # echo "octoprint ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+# COPY --from=builder --chown=octoprint:octoprint /home/octoprint/OctoPrint/venv /home/octoprint/OctoPrint/venv
+# COPY --from=builder --chown=octoprint:octoprint /home/octoprint/OctoPrint/run /home/octoprint/OctoPrint/run
 
-COPY --chown=octoprint:octoprint run.sh /run.sh
-RUN ["chmod", "a+x", "/run.sh"]
+# USER octoprint
+# WORKDIR /home/octoprint
 
-# CMD ["tini", "-s", "--", "/run.sh"]
+# COPY --chown=octoprint:octoprint run.sh .
+# RUN ["chmod", "a+x", "run.sh"]
+
+# ENTRYPOINT [ "run.sh" ]
+
+# # CMD ["tini", "-s", "--", "/run.sh"]

@@ -10,4 +10,4 @@ Please report issues here, or through the following [thread](https://community.h
 
 ## octoprint_dev
 
-Development version of octoprint addon. May not be stable for use.
+Development version of octoprint addon. May break at any time.

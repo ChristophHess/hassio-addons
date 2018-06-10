@@ -4,11 +4,16 @@ services:
 branches:
   only:
     - build
+env:
+  - ADDON="octoprint"
+  - ADDON="octoprint_dev"
 before_install:
   - sudo apt-get install jq
   - sudo chmod +x ./build.sh
-env:
-  - ADDON="octoprint_dev"
-script:
-  - docker login -u $DOCKER_USER -p $DOCKER_PASS
-  - ./build.sh $ADDON
+  - git clone --depth 1 https://github.com/foosel/OctoPrint.git tmp/OctoPrint || true
+  - git clone --depth 1 https://github.com/Ultimaker/libArcus.git tmp/libArcus || true
+  - git clone --depth 1 -b legacy https://github.com/Ultimaker/CuraEngine.git -b legacy tmp/CuraEngine || true
+  - cp -R tmp/ $ADDON/tmp/
+# script:
+#   - docker login -u $DOCKER_USER -p $DOCKER_PASS
+#   - ./build.sh $ADDON

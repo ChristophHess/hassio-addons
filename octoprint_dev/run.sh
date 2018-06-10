@@ -30,3 +30,4 @@ echo $(ls /dev/)
 
 # setup
 # /data/OctoPrint/venv/bin/octoprint daemon restart --basedir /config/octoprint >> /home/octoprint/log_octo.txt
+/home/octoprint/OctoPrint/venv/bin/octoprint daemon restart --basedir /config/octoprint >> /home/octoprint/log_octo.txt

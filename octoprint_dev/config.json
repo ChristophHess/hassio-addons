@@ -12,12 +12,10 @@
   "map": ["config:rw"],
   "options": {
       "ssl": false,
-      "device": "ttyUSB0",
       "port": 5000
   },
   "schema": {
       "ssl": "bool",
-      "device": "str",
       "port": "int"
   },
   "webui": "[PROTO:ssl]://[HOST]:[PORT:5000]",
