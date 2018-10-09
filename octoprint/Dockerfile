@@ -5,6 +5,10 @@ ENV LANG C.UTF-8
 
 ENV OCTOPRINT_VERSION=1.3.9
 ENV CURA_VERSION=15.04.6
+# To have Python packages persistently installed.
+ENV PYTHONPATH=/data/python
+ENV PATH=${PATH}:/data/python/bin
+ENV PYTHONUSERBASE=/data/python
 
 # Change to tmp folder for all installs, easier to clean
 WORKDIR /tmp
@@ -19,26 +23,31 @@ RUN apk add --no-cache jq supervisor ffmpeg py-pip \
     && \
     # Compile and install
     apk add --no-cache --virtual build-dependencies \
-    build-base cmake linux-headers libjpeg-turbo-dev python-dev libexecinfo-dev \
-    && pip install --upgrade pip \
+    build-base cmake linux-headers libjpeg-turbo-dev python-dev libexecinfo-dev avahi-compat-libdns_sd \
     && \
+    # mjpeg-streamer
     cd /tmp/mjpg-streamer-master/mjpg-streamer-experimental/ \
     && make \
     && make install \
     && \
-    cd /tmp/OctoPrint-${OCTOPRINT_VERSION} \
-    && pip install -r requirements.txt \
-    && python setup.py install \
-    && \
+    # Cura
     cd /tmp/CuraEngine-${CURA_VERSION} \
     && mkdir -p build \
     && make \
     && cp build/CuraEngine /sbin/CuraEngine \
     && \
-    apk del --no-cache build-dependencies \
+    # Octoprint
+    cd /tmp/OctoPrint-${OCTOPRINT_VERSION} \
+    && pip install --upgrade pip --user \
+    && pip install --user https://goo.gl/SxQZ06 \
+    && pip install -r requirements.txt --user \
+    && python setup.py install --user \
+    && ls /data \
+    && cp -R /data/python /root/ \
     && \
     # Cleanup
-    rm -rf /tmp
+    apk del --no-cache build-dependencies \
+    && rm -rf /tmp
 
 # Copy data for add-on
 COPY run.sh /
