@@ -20,6 +20,7 @@ RUN apk add --no-cache jq supervisor ffmpeg py-pip \
     # Compile and install
     apk add --no-cache --virtual build-dependencies \
     build-base cmake linux-headers libjpeg-turbo-dev python-dev libexecinfo-dev \
+    && pip install --upgrade pip \
     && \
     cd /tmp/mjpg-streamer-master/mjpg-streamer-experimental/ \
     && make \
