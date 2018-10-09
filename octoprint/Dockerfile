@@ -3,6 +3,8 @@ FROM $BUILD_FROM
 
 ENV LANG C.UTF-8
 
+ENV CAMERA_DEV /dev/video0
+ENV STREAMER_FLAGS -y -n
 ENV OCTOPRINT_VERSION=1.3.9
 ENV CURA_VERSION=15.04.6
 # To have Python packages persistently installed.
@@ -26,7 +28,8 @@ RUN apk add --no-cache jq supervisor ffmpeg py-pip \
     build-base cmake linux-headers libjpeg-turbo-dev python-dev libexecinfo-dev \
     && \
     # mjpeg-streamer
-    cd /tmp/mjpg-streamer-master/mjpg-streamer-experimental/ \
+    apk add --no-cache haproxy \
+    && cd /tmp/mjpg-streamer-master/mjpg-streamer-experimental/ \
     && make --quiet \
     && make install --quiet \
     && \
@@ -53,9 +56,10 @@ RUN apk add --no-cache jq supervisor ffmpeg py-pip \
 # Copy data for add-on
 COPY run.sh /
 RUN chmod a+x /run.sh
+COPY haproxy.cfg /etc/haproxy/haproxy.cfg
 COPY supervisord.conf /etc/supervisord.conf
 
-EXPOSE 5000
+EXPOSE 80
 WORKDIR /
 CMD [ "/run.sh" ]
 

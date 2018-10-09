@@ -5,9 +5,9 @@
     "description": "Octoprint add-on for Hass.io",
     "url": "https://github.com/fredrikbaberg/hassio-addons",
     "startup": "application",
-    "boot": "manual",
+    "boot": "auto",
     "ports": {
-        "5000/tcp": 5000
+        "5000/tcp": 80
     },
     "map": ["config:rw"],
     "options": {},
