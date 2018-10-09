@@ -3,12 +3,14 @@ set -e
 
 copy_data() {
     if [ ! -d /data/python ]; then
+        echo "Copy data"
         cp -R /root/python /data/
     fi
 }
 
 create_config() {
     if [ ! -f /config/octoprint/config.yaml ]; then
+        echo "Create config"
         mkdir -p /config/octoprint/
         cd /config/octoprint
         touch config.yaml
@@ -35,4 +37,6 @@ create_config() {
 
 copy_data
 create_config
+echo "Launch"
 /usr/bin/supervisord -c /etc/supervisord.conf
+tail -f /tmp/octoprint-stdout*
