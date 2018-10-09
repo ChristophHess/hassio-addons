@@ -23,25 +23,26 @@ RUN apk add --no-cache jq supervisor ffmpeg py-pip \
     && \
     # Compile and install
     apk add --no-cache --virtual build-dependencies \
-    build-base cmake linux-headers libjpeg-turbo-dev python-dev libexecinfo-dev avahi-compat-libdns_sd \
+    build-base cmake linux-headers libjpeg-turbo-dev python-dev libexecinfo-dev \
     && \
     # mjpeg-streamer
     cd /tmp/mjpg-streamer-master/mjpg-streamer-experimental/ \
-    && make \
-    && make install \
+    && make --quiet \
+    && make install --quiet \
     && \
     # Cura
     cd /tmp/CuraEngine-${CURA_VERSION} \
     && mkdir -p build \
-    && make \
+    && make --quiet \
     && cp build/CuraEngine /sbin/CuraEngine \
     && \
     # Octoprint
-    cd /tmp/OctoPrint-${OCTOPRINT_VERSION} \
-    && pip install --upgrade pip --user \
-    && pip install --user https://goo.gl/SxQZ06 \
-    && pip install -r requirements.txt --user \
-    && python setup.py install --user \
+    apk add --no-cache avahi-compat-libdns_sd dbus avahi \
+    && cd /tmp/OctoPrint-${OCTOPRINT_VERSION} \
+    && pip install --upgrade pip --user --quiet \
+    && pip install --user https://goo.gl/SxQZ06 --quiet \
+    && pip install -r requirements.txt --user --quiet \
+    && python setup.py install --user --quiet \
     && ls /data \
     && cp -R /data/python /root/ \
     && \
