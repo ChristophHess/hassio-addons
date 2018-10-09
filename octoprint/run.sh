@@ -21,9 +21,9 @@ create_config() {
         echo "  virtualPrinter:" >> config.yaml
         echo "    enabled: true" >> config.yaml
         echo "folder:" >> config.yaml
-        echo "  timelapse: /config/timelapse" >> config.yaml
-        echo "  uploads: /config/uploads" >> config.yaml
-        echo "  watched: /config/watched" >> config.yaml
+        echo "  timelapse: /config/octoprint/timelapse" >> config.yaml
+        echo "  uploads: /config/octoprint/uploads" >> config.yaml
+        echo "  watched: /config/octoprint/watched" >> config.yaml
         echo "plugins:" >> config.yaml
         echo "  cura:" >> config.yaml
         echo "    cura_engine: /sbin/CuraEngine" >> config.yaml
