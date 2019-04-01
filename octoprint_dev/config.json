@@ -15,5 +15,5 @@
     "schema": {},
     "webui": "http://[HOST]:[PORT:5000]",
     "auto_uart": true,
-    "image": "fredrikbaberg/octoprint-dev-aarch64-image"
+    "image": "fredrikbaberg/octoprint-dev-armhf-image"
 }
