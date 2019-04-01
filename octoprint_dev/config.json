@@ -16,5 +16,11 @@
     "webui": "http://[HOST]:[PORT:5000]",
     "auto_uart": true,
     "image": "fredrikbaberg/octoprint-dev-{arch}-image",
-    "arch": "armhf|aarch64|i386|amd64"
+    "arch": [
+        "aarch64",
+        "amd64",
+        "armhf",
+        "armv7",
+        "i386"
+    ]
 }
