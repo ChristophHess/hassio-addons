@@ -5,7 +5,7 @@ ENV LANG C.UTF-8
 
 ENV CAMERA_DEV /dev/video0
 ENV STREAMER_FLAGS -y -n
-ENV OCTOPRINT_VERSION=1.3.9
+ENV OCTOPRINT_VERSION=1.3.10
 ENV CURA_VERSION=15.04.6
 # To have Python packages persistently installed.
 ENV PYTHONPATH=/data/python
